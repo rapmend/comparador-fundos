@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparativo - Fundos Conservadores de Previdencia</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,sans-serif;background:#f0f2f5;color:#1a1a2e;padding:20px;line-height:1.5}
+  .container{max-width:1400px;margin:0 auto}
+
+  .header{text-align:center;margin-bottom:24px;padding:28px 24px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);border-radius:16px;color:#fff}
+  .header h1{font-size:1.45rem;font-weight:700;letter-spacing:-.3px}
+  .header p{font-size:.8rem;opacity:.7;font-weight:300;margin-top:4px}
+  .header .badges{margin-top:14px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+  .header .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:5px 14px;border-radius:20px;font-size:.7rem;font-weight:500;letter-spacing:.3px}
+  .header .badge-valor{background:rgba(34,197,94,.25);border-color:rgba(34,197,94,.4)}
+
+  /* Filters */
+  .filters-panel{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .filters-panel h3{font-size:.82rem;font-weight:700;color:#475569;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+  .filters-grid{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+  .filter-item{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#334155;cursor:pointer;user-select:none;padding:4px 10px;border-radius:6px;border:1px solid #e2e8f0;background:#f8fafc;transition:all .15s}
+  .filter-item:hover{background:#eff6ff;border-color:#93c5fd}
+  .filter-item input[type="checkbox"]{accent-color:#3b82f6;cursor:pointer;width:14px;height:14px}
+  .filter-item.active{background:#eff6ff;border-color:#3b82f6;color:#1d4ed8;font-weight:600}
+  .filter-sep{width:1px;height:24px;background:#e2e8f0;margin:0 4px}
+  .filter-count{font-size:.68rem;color:#94a3b8;margin-left:auto;font-weight:500}
+
+  /* Sections */
+  .section-title{display:flex;align-items:center;gap:12px;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #e2e8f0}
+  .section-title .icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:#fff;font-weight:700}
+  .section-title h2{font-size:1rem;font-weight:600;color:#1a1a2e}
+  .section-title .subtitle{font-size:.72rem;color:#64748b;font-weight:400;margin-left:4px}
+  .brasilprev-color{background:linear-gradient(135deg,#0d47a1,#1565c0)}
+  .bradesco-color{background:linear-gradient(135deg,#b71c1c,#d32f2f)}
+  .top-color{background:linear-gradient(135deg,#b45309,#d97706)}
+
+  /* Tables */
+  .table-wrap{overflow-x:auto;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:20px;background:#fff}
+  table{width:100%;border-collapse:collapse;font-size:.72rem}
+  thead th{background:#f1f5f9;color:#475569;font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap;border-bottom:2px solid #e2e8f0;font-size:.68rem;text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1}
+  tbody td{padding:7px 10px;border-bottom:1px solid #f1f5f9;white-space:nowrap}
+  tbody tr{transition:background .1s}
+  tbody tr:hover{background:#f8fafc}
+  tbody tr.hidden{display:none}
+  tbody tr.highlight{background:#fffbeb}
+  .fund-name{font-weight:600;color:#1e293b;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  .good{color:#16a34a;font-weight:600}
+  .warn{color:#d97706;font-weight:600}
+  .bad{color:#dc2626;font-weight:600}
+  .muted{color:#94a3b8;font-size:.65rem}
+  .tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:.6rem;font-weight:600;letter-spacing:.3px}
+  .tag-geral{background:#dcfce7;color:#166534}
+  .tag-qualif{background:#fee2e2;color:#991b1b}
+  .tag-fechado{background:#fef3c7;color:#92400e}
+  .tag-capacity{background:#e0e7ff;color:#3730a3}
+  .tag-pre{background:#fce7f3;color:#9d174d}
+  .tag-imab{background:#f3e8ff;color:#6b21a8}
+  .tag-novo{background:#cffafe;color:#155e75}
+
+  /* Top 3 card */
+  .top-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px;margin-bottom:24px}
+  .top-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.07);border:1px solid #e2e8f0}
+  .top-card h3{font-size:.85rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .top-card .rank{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:800}
+  .rank-1{background:#d97706}
+  .rank-2{background:#94a3b8}
+  .rank-3{background:#b45309}
+  .top-fund{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;margin-bottom:6px;background:#f8fafc;border:1px solid #f1f5f9}
+  .top-fund .rank{flex-shrink:0}
+  .top-fund-info{flex:1;min-width:0}
+  .top-fund-name{font-size:.75rem;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .top-fund-details{font-size:.65rem;color:#64748b;margin-top:1px}
+  .top-fund-ret{font-size:.85rem;font-weight:700;color:#16a34a;flex-shrink:0}
+
+  /* Info banner */
+  .info-banner{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:.73rem;color:#92400e;display:flex;align-items:flex-start;gap:8px}
+  .info-banner strong{font-weight:700}
+
+  /* Footer */
+  .footer{text-align:center;padding:16px;font-size:.65rem;color:#94a3b8;margin-top:24px;border-top:1px solid #e2e8f0}
+
+  /* Responsive */
+  @media(max-width:768px){
+    body{padding:12px}
+    .header h1{font-size:1.15rem}
+    .top-cards{grid-template-columns:1fr}
+    .filters-grid{gap:6px 10px}
+  }
+
+  .no-results{padding:24px;text-align:center;color:#94a3b8;font-size:.8rem;font-style:italic}
+  .sort-btn{cursor:pointer;user-select:none}
+  .sort-btn:hover{color:#1d4ed8}
+  .sort-btn::after{content:'';display:inline-block;margin-left:3px;font-size:.55rem}
+  .sort-btn.asc::after{content:'▲'}
+  .sort-btn.desc::after{content:'▼'}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Comparativo de Fundos Conservadores de Previdencia</h1>
+    <p>BrasilPrev vs Bradesco &mdash; Analise para alocacao de R$ 600 mil</p>
+    <div class="badges">
+      <span class="badge badge-valor">R$ 300 mil por instituicao</span>
+      <span class="badge">Investidor Geral (nao qualificado)</span>
+      <span class="badge">BrasilPrev: Jan/2026</span>
+      <span class="badge">Bradesco: 09/Fev/2026</span>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-banner">
+    <span style="font-size:1rem">&#9432;</span>
+    <div>
+      <strong>Filtros ativos por padrao:</strong> Excluidos fundos pre-fixados, inflacao/IMA-B, volatilidade acima de 0,50%, taxa de administracao de 1,0% ou mais, e fundos para investidores qualificados. Use os controles abaixo para ajustar os filtros conforme desejar.
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-panel">
+    <h3>Filtros <span class="filter-count" id="filterCount"></span></h3>
+    <div class="filters-grid">
+      <label class="filter-item active" id="flt-pre">
+        <input type="checkbox" checked onchange="applyFilters()"> Excluir Pre-fixados
+      </label>
+      <label class="filter-item active" id="flt-imab">
+        <input type="checkbox" checked onchange="applyFilters()"> Excluir Inflacao/IMA-B
+      </label>
+      <label class="filter-item active" id="flt-vol">
+        <input type="checkbox" checked onchange="applyFilters()"> Excluir Vol &gt; 0,50%
+      </label>
+      <label class="filter-item active" id="flt-adm">
+        <input type="checkbox" checked onchange="applyFilters()"> Excluir Tx Adm &ge; 1,0%
+      </label>
+      <label class="filter-item active" id="flt-qualif">
+        <input type="checkbox" checked onchange="applyFilters()"> Excluir Qualificados
+      </label>
+      <div class="filter-sep"></div>
+      <label class="filter-item" id="flt-fechado">
+        <input type="checkbox" onchange="applyFilters()"> Excluir Fechados
+      </label>
+      <label class="filter-item" id="flt-capacity">
+        <input type="checkbox" onchange="applyFilters()"> Excluir Capacity
+      </label>
+      <label class="filter-item" id="flt-min300">
+        <input type="checkbox" onchange="applyFilters()"> Apenas aporte &le; R$ 300 mil
+      </label>
+    </div>
+  </div>
+
+  <!-- TOP 3 -->
+  <div class="section-title">
+    <div class="icon top-color">&#9733;</div>
+    <h2>Top 3 de Cada Instituicao <span class="subtitle">(com filtros aplicados, ordenado por rentabilidade 12M)</span></h2>
+  </div>
+  <div class="top-cards" id="topCards">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- BRASILPREV TABLE -->
+  <div class="section-title">
+    <div class="icon brasilprev-color">BP</div>
+    <h2>BrasilPrev &mdash; Renda Fixa <span class="subtitle" id="bpCount"></span></h2>
+  </div>
+  <div class="table-wrap">
+    <table id="tableBP">
+      <thead>
+        <tr>
+          <th>Fundo</th>
+          <th class="num sort-btn" data-col="taf" data-table="bp">TAF (%)</th>
+          <th class="num sort-btn" data-col="ret1m" data-table="bp">Ret. Jan/26</th>
+          <th class="num sort-btn" data-col="cdi" data-table="bp">% CDI</th>
+          <th class="num sort-btn" data-col="ret12m" data-table="bp">12M (%)</th>
+          <th class="num sort-btn" data-col="ret24m" data-table="bp">24M (%)</th>
+          <th class="num sort-btn" data-col="ret2025" data-table="bp">2025 (%)</th>
+          <th class="num sort-btn" data-col="ret2024" data-table="bp">2024 (%)</th>
+          <th class="num sort-btn" data-col="vol" data-table="bp">Vol 12M</th>
+          <th>Aporte Min</th>
+          <th>Tipo</th>
+          <th>Obs</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyBP"></tbody>
+    </table>
+    <div class="no-results" id="noResultsBP" style="display:none">Nenhum fundo corresponde aos filtros selecionados.</div>
+  </div>
+
+  <!-- BRADESCO TABLE -->
+  <div class="section-title">
+    <div class="icon bradesco-color">BD</div>
+    <h2>Bradesco &mdash; Renda Fixa <span class="subtitle" id="bdCount"></span></h2>
+  </div>
+  <div class="table-wrap">
+    <table id="tableBD">
+      <thead>
+        <tr>
+          <th>Fundo</th>
+          <th class="num sort-btn" data-col="taf" data-table="bd">Tx Adm (%)</th>
+          <th class="num sort-btn" data-col="ret1m" data-table="bd">Ret. 1M</th>
+          <th class="num sort-btn" data-col="cdi" data-table="bd">% CDI 12M</th>
+          <th class="num sort-btn" data-col="ret12m" data-table="bd">12M (%)</th>
+          <th class="num sort-btn" data-col="ret6m" data-table="bd">6M (%)</th>
+          <th class="num sort-btn" data-col="vol" data-table="bd">Vol 6M</th>
+          <th>PL (R$ mi)</th>
+          <th>Tx Max (%)</th>
+          <th>Tipo</th>
+          <th>Obs</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyBD"></tbody>
+    </table>
+    <div class="no-results" id="noResultsBD" style="display:none">Nenhum fundo corresponde aos filtros selecionados.</div>
+  </div>
+
+  <div class="footer">
+    Dados extraidos das tabelas de rentabilidade oficiais &bull; BrasilPrev: Janeiro/2026 &bull; Bradesco: 09/Fev/2026<br>
+    Este material e meramente informativo e nao constitui recomendacao de investimento.
+  </div>
+</div>
+
+<script>
+// ============================
+// DATA: BrasilPrev Renda Fixa
+// ============================
+const fundsBP = [
+  {name:"BRASILPREV CLASSICO",taf:1.00,ret1m:1.10,cdi:94.25,ret12m:13.46,ret24m:24.86,ret2025:13.33,ret2024:9.96,vol:0.04,min:"5 mil",minVal:5,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV CLASSICO V",taf:0.80,ret1m:1.11,cdi:95.70,ret12m:13.68,ret24m:25.35,ret2025:13.56,ret2024:10.17,vol:0.04,min:"1 milhao",minVal:1000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV CLASSICO VI",taf:0.70,ret1m:1.12,cdi:96.40,ret12m:13.79,ret24m:25.60,ret2025:13.67,ret2024:10.28,vol:0.04,min:"2 milhoes",minVal:2000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV CLASSICO VII",taf:0.60,ret1m:1.13,cdi:97.08,ret12m:13.90,ret24m:25.84,ret2025:13.78,ret2024:10.39,vol:0.04,min:"5 milhoes",minVal:5000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV CLASSICO IV",taf:0.50,ret1m:1.14,cdi:97.88,ret12m:14.03,ret24m:26.12,ret2025:13.90,ret2024:10.51,vol:0.04,min:"10 milhoes",minVal:10000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV FIX C",taf:1.00,ret1m:1.20,cdi:102.84,ret12m:13.42,ret24m:23.22,ret2025:13.17,ret2024:8.39,vol:0.46,min:"5 mil",minVal:5,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV FIX VII",taf:0.80,ret1m:1.21,cdi:104.31,ret12m:13.65,ret24m:23.72,ret2025:13.40,ret2024:8.61,vol:0.46,min:"1 milhao",minVal:1000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV FIX VIII",taf:0.70,ret1m:1.22,cdi:104.97,ret12m:13.76,ret24m:23.95,ret2025:13.50,ret2024:8.72,vol:0.46,min:"2 milhoes",minVal:2000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV FIX XI",taf:0.60,ret1m:1.23,cdi:105.65,ret12m:13.86,ret24m:24.19,ret2025:13.61,ret2024:8.82,vol:0.46,min:"5 milhoes",minVal:5000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV FIX XII",taf:0.50,ret1m:1.24,cdi:106.41,ret12m:13.98,ret24m:24.45,ret2025:13.73,ret2024:8.93,vol:0.46,min:"10 milhoes",minVal:10000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV CONCEPT III",taf:1.00,ret1m:1.11,cdi:95.44,ret12m:9.79,ret24m:16.79,ret2025:10.62,ret2024:5.09,vol:1.59,min:"5 mil",minVal:5,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV CONCEPT",taf:0.80,ret1m:1.13,cdi:96.86,ret12m:10.01,ret24m:17.26,ret2025:10.84,ret2024:5.31,vol:1.59,min:"1 milhao",minVal:1000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV CONCEPT II",taf:0.70,ret1m:1.13,cdi:97.49,ret12m:10.10,ret24m:17.46,ret2025:10.94,ret2024:5.40,vol:1.59,min:"2 milhoes",minVal:2000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV CONCEPT I",taf:0.60,ret1m:1.14,cdi:98.26,ret12m:10.22,ret24m:17.71,ret2025:11.06,ret2024:5.51,vol:1.58,min:"5 milhoes",minVal:5000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV PREMIUM V",taf:1.00,ret1m:1.31,cdi:112.15,ret12m:13.72,ret24m:20.77,ret2025:13.47,ret2024:5.59,vol:1.39,min:"5 mil",minVal:5,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV PREMIUM VI",taf:0.80,ret1m:1.32,cdi:113.64,ret12m:13.96,ret24m:21.26,ret2025:13.70,ret2024:5.81,vol:1.39,min:"1 milhao",minVal:1000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV PREMIUM VII",taf:0.70,ret1m:1.33,cdi:114.35,ret12m:14.06,ret24m:21.49,ret2025:13.81,ret2024:5.90,vol:1.39,min:"2 milhoes",minVal:2000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV PREMIUM VIII",taf:0.60,ret1m:1.34,cdi:115.02,ret12m:14.17,ret24m:21.72,ret2025:13.92,ret2024:6.01,vol:1.39,min:"5 milhoes",minVal:5000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV ESTRATEGIA 2035 V",taf:1.00,ret1m:0.24,cdi:20.21,ret12m:12.42,ret24m:6.44,ret2025:12.94,ret2024:-7.17,vol:5.33,min:"5 mil",minVal:5,tipo:"Geral",pre:true,imab:false,status:"Aberto",obs:"Target date"},
+  {name:"BRASILPREV ESTRATEGIA 2035 VI",taf:0.80,ret1m:0.25,cdi:21.68,ret12m:12.65,ret24m:6.88,ret2025:13.17,ret2024:-6.97,vol:5.33,min:"1 milhao",minVal:1000,tipo:"Geral",pre:true,imab:false,status:"Aberto",obs:"Target date"},
+  {name:"BRASILPREV RF ATIVO CP II",taf:1.25,ret1m:1.40,cdi:120.50,ret12m:13.53,ret24m:23.67,ret2025:12.97,ret2024:8.77,vol:0.74,min:"5 mil",minVal:5,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV RF ATIVO CP I",taf:1.00,ret1m:1.43,cdi:122.41,ret12m:13.83,ret24m:24.34,ret2025:13.27,ret2024:9.06,vol:0.74,min:"1 milhao",minVal:1000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV CREDITO PRIV PLUS",taf:0.80,ret1m:1.19,cdi:102.20,ret12m:14.10,ret24m:26.47,ret2025:13.91,ret2024:11.05,vol:0.25,min:"5 mil",minVal:5,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:"Tx max 1,05%"},
+  {name:"BRASILPREV CREDITO PRIV PLUS IQ",taf:0.80,ret1m:1.20,cdi:102.97,ret12m:14.13,ret24m:26.82,ret2025:13.96,ret2024:11.32,vol:0.28,min:"1 milhao",minVal:1000,tipo:"Qualificado",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV RENDA FIXA ATIVA",taf:1.00,ret1m:1.24,cdi:106.19,ret12m:10.34,ret24m:28.62,ret2025:8.69,ret2024:18.42,vol:4.73,min:"5 mil",minVal:5,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:"Tx max 1,25%"},
+  {name:"BRASILPREV RENDA FIXA ATIVA IQ",taf:0.80,ret1m:1.25,cdi:107.53,ret12m:10.54,ret24m:29.10,ret2025:8.88,ret2024:18.64,vol:4.73,min:"1 milhao",minVal:1000,tipo:"Qualificado",pre:false,imab:false,status:"Aberto",obs:"Tx max 1,05%"},
+  {name:"BRASILPREV PRE ATIVO",taf:1.00,ret1m:1.97,cdi:169.40,ret12m:16.53,ret24m:18.92,ret2025:17.10,ret2024:0.10,vol:3.00,min:"5 mil",minVal:5,tipo:"Geral",pre:true,imab:false,status:"Aberto",obs:"Pre-fixado; Tx max 1,25%"},
+  {name:"BRASILPREV PRE ATIVO IQ",taf:0.80,ret1m:1.99,cdi:170.78,ret12m:16.75,ret24m:19.43,ret2025:17.33,ret2024:0.41,vol:3.00,min:"1 milhao",minVal:1000,tipo:"Qualificado",pre:true,imab:false,status:"Aberto",obs:"Pre-fixado"},
+  {name:"BRASILPREV CREDITO PRIVADO",taf:0.80,ret1m:1.20,cdi:103.40,ret12m:14.22,ret24m:26.23,ret2025:14.04,ret2024:10.56,vol:0.22,min:"1 milhao",minVal:1000,tipo:"Geral",pre:false,imab:false,status:"Aberto",obs:""},
+  {name:"BRASILPREV PRE 2027 IQ",taf:0.80,ret1m:1.29,cdi:111.02,ret12m:15.06,ret24m:16.47,ret2025:16.72,ret2024:-0.85,vol:1.84,min:"1 milhao",minVal:1000,tipo:"Qualificado",pre:true,imab:false,status:"Aberto",obs:"Pre-fixado"},
+  {name:"BRASILPREV PRE 2033 IQ",taf:0.80,ret1m:2.45,cdi:210.58,ret12m:19.39,ret24m:8.85,ret2025:21.53,ret2024:-12.94,vol:7.48,min:"1 milhao",minVal:1000,tipo:"Qualificado",pre:true,imab:false,status:"Aberto",obs:"Pre-fixado"},
+];
+
+// ============================
+// DATA: Bradesco Renda Fixa
+// ============================
+const fundsBD = [
+  {name:"Bradesco RF-A",taf:0.50,ret1m:1.13,cdi:97,ret12m:14.11,ret6m:6.95,vol:0.05,pl:"22.090,7",txMax:0.50,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco SobMedida I-B",taf:1.40,ret1m:1.08,cdi:88,ret12m:12.84,ret6m:6.41,vol:0.29,pl:"19,6",txMax:1.40,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco SobMedida II-B",taf:1.30,ret1m:1.09,cdi:89,ret12m:12.96,ret6m:6.46,vol:0.29,pl:"18,1",txMax:1.30,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco SobMedida III-B",taf:1.20,ret1m:1.10,cdi:90,ret12m:13.12,ret6m:6.54,vol:0.29,pl:"45,6",txMax:1.20,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco SobMedida IV-B",taf:1.10,ret1m:1.11,cdi:91,ret12m:13.24,ret6m:6.60,vol:0.29,pl:"53,7",txMax:1.10,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco SobMedida V-B",taf:1.00,ret1m:1.12,cdi:92,ret12m:13.40,ret6m:6.67,vol:0.29,pl:"1.036,4",txMax:1.00,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Cred Priv II",taf:1.00,ret1m:1.09,cdi:93,ret12m:13.61,ret6m:6.70,vol:0.04,pl:"4.088,5",txMax:1.00,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Priv PB Cred Priv",taf:0.80,ret1m:1.11,cdi:95,ret12m:13.86,ret6m:6.82,vol:0.04,pl:"37.047,7",txMax:0.80,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Priv Performance CP",taf:0.50,ret1m:1.13,cdi:97,ret12m:14.20,ret6m:6.98,vol:0.04,pl:"58.050,8",txMax:0.50,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Premium CP",taf:0.60,ret1m:1.15,cdi:99,ret12m:14.39,ret6m:6.95,vol:0.09,pl:"72.693,0",txMax:0.60,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:true,obs:"Restricao de capacity",min:"",minVal:0},
+  {name:"Bradesco Ultra CP",taf:0.40,ret1m:1.17,cdi:100,ret12m:14.61,ret6m:6.95,vol:0.10,pl:"26.869,5",txMax:0.70,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:true,obs:"Restricao de capacity",min:"",minVal:0},
+  {name:"Bradesco Tivio HGD 30 CP",taf:0.40,ret1m:1.18,cdi:null,ret12m:null,ret6m:7.08,vol:0.16,pl:"3.238,9",txMax:0.70,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"Inicio Mai/2025",min:"",minVal:0},
+  {name:"Bradesco Az Quest Altro",taf:0.26,ret1m:1.16,cdi:null,ret12m:null,ret6m:null,vol:null,pl:"82,8",txMax:1.15,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"Inicio Nov/2025",min:"",minVal:0},
+  {name:"Bradesco SulAmerica",taf:0.24,ret1m:1.17,cdi:null,ret12m:null,ret6m:null,vol:null,pl:"150,2",txMax:0.90,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"Inicio Nov/2025",min:"",minVal:0},
+  {name:"Bradesco CP Inflacao",taf:0.45,ret1m:1.29,cdi:83,ret12m:12.10,ret6m:5.81,vol:1.67,pl:"109,1",txMax:0.60,tipo:"Geral",pre:false,imab:true,status:"Aberto",capacity:false,obs:"Inflacao",min:"",minVal:0},
+  {name:"Bradesco Multigestores II CP",taf:0.60,ret1m:1.16,cdi:98,ret12m:14.32,ret6m:6.93,vol:0.16,pl:"1.480,0",txMax:1.20,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Multigestores CP",taf:0.40,ret1m:1.19,cdi:100,ret12m:14.56,ret6m:7.01,vol:0.16,pl:"8.786,6",txMax:0.90,tipo:"Qualificado",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Agora Prev ESG Gl Fix Income",taf:0.30,ret1m:0.50,cdi:75,ret12m:10.90,ret6m:5.67,vol:1.63,pl:"294,0",txMax:0.80,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"ESG Global",min:"",minVal:0},
+  {name:"Bradesco Princ. ESG Fix Income",taf:0.30,ret1m:-0.25,cdi:49,ret12m:7.11,ret6m:4.18,vol:3.38,pl:"59,9",txMax:0.80,tipo:"Qualificado",pre:false,imab:false,status:"Aberto",capacity:false,obs:"ESG",min:"",minVal:0},
+  {name:"Bradesco Creta RF",taf:0.60,ret1m:1.19,cdi:94,ret12m:13.70,ret6m:6.81,vol:0.54,pl:"6.573,5",txMax:0.60,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Ativo RF",taf:0.80,ret1m:1.18,cdi:92,ret12m:13.46,ret6m:6.70,vol:0.54,pl:"2.781,1",txMax:0.80,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco PGBL RF F10",taf:1.00,ret1m:1.16,cdi:91,ret12m:13.24,ret6m:6.60,vol:0.54,pl:"4.288,1",txMax:1.00,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco VGBL RF F10",taf:1.00,ret1m:1.16,cdi:91,ret12m:13.25,ret6m:6.60,vol:0.54,pl:"8.092,4",txMax:1.00,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco RF Athenas",taf:0.60,ret1m:1.22,cdi:93,ret12m:13.53,ret6m:6.87,vol:0.82,pl:"8.476,5",txMax:0.60,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Exitus RF",taf:0.55,ret1m:1.26,cdi:98,ret12m:14.25,ret6m:7.27,vol:0.47,pl:"419,8",txMax:0.70,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Grand Exitus",taf:0.50,ret1m:1.51,cdi:94,ret12m:13.74,ret6m:7.12,vol:1.11,pl:"38,4",txMax:0.80,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Volt RF",taf:0.65,ret1m:1.09,cdi:77,ret12m:11.16,ret6m:6.04,vol:1.07,pl:"29,8",txMax:0.80,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco Ativo RF F08 C",taf:0.80,ret1m:1.20,cdi:91,ret12m:13.30,ret6m:6.76,vol:0.82,pl:"2.990,9",txMax:0.80,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco RF F10 C",taf:1.00,ret1m:1.18,cdi:90,ret12m:13.06,ret6m:6.65,vol:0.82,pl:"610,9",txMax:1.00,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco RF Dinamico Plus",taf:0.80,ret1m:1.06,cdi:87,ret12m:12.66,ret6m:5.60,vol:1.75,pl:"36,8",txMax:0.80,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  {name:"Bradesco RF Dinamico",taf:1.50,ret1m:1.15,cdi:83,ret12m:12.10,ret6m:5.43,vol:1.75,pl:"223,6",txMax:1.50,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"",min:"",minVal:0},
+  // RF Indexado
+  {name:"Bradesco IRF-M",taf:0.60,ret1m:1.62,cdi:null,ret12m:16.63,ret6m:7.18,vol:2.53,pl:"320,1",txMax:0.60,tipo:"Geral",pre:true,imab:false,status:"Aberto",capacity:false,obs:"Pre-fixado IRF-M",min:"",minVal:0},
+  {name:"Bradesco Pre 5 anos",taf:0.80,ret1m:1.78,cdi:null,ret12m:20.27,ret6m:6.85,vol:6.28,pl:"131,2",txMax:0.80,tipo:"Geral",pre:true,imab:false,status:"Aberto",capacity:false,obs:"Pre-fixado",min:"",minVal:0},
+  {name:"Bradesco IMA-B 5",taf:0.60,ret1m:1.21,cdi:null,ret12m:10.34,ret6m:5.24,vol:1.61,pl:"528,8",txMax:0.60,tipo:"Geral",pre:false,imab:true,status:"Aberto",capacity:false,obs:"IMA-B 5",min:"",minVal:0},
+  {name:"Bradesco IMA-B",taf:1.00,ret1m:0.96,cdi:null,ret12m:11.39,ret6m:3.84,vol:3.92,pl:"288,9",txMax:1.00,tipo:"Geral",pre:false,imab:true,status:"Aberto",capacity:false,obs:"IMA-B",min:"",minVal:0},
+  {name:"Bradesco Juro Real IMA-B",taf:0.60,ret1m:0.99,cdi:null,ret12m:11.85,ret6m:4.05,vol:3.92,pl:"961,7",txMax:0.60,tipo:"Geral",pre:false,imab:true,status:"Aberto",capacity:false,obs:"IMA-B",min:"",minVal:0},
+  {name:"Bradesco IMA-B 5+",taf:0.80,ret1m:0.92,cdi:null,ret12m:12.81,ret6m:3.04,vol:5.94,pl:"64,9",txMax:0.80,tipo:"Geral",pre:false,imab:true,status:"Aberto",capacity:false,obs:"IMA-B 5+",min:"",minVal:0},
+  {name:"Bradesco Juro Real 2040",taf:0.60,ret1m:0.71,cdi:null,ret12m:11.85,ret6m:2.32,vol:6.15,pl:"18,6",txMax:0.60,tipo:"Geral",pre:false,imab:true,status:"Aberto",capacity:false,obs:"Inflacao",min:"",minVal:0},
+  {name:"Bradesco Juro Real 2050",taf:0.60,ret1m:0.95,cdi:null,ret12m:14.84,ret6m:3.06,vol:7.07,pl:"38,1",txMax:0.60,tipo:"Geral",pre:false,imab:true,status:"Aberto",capacity:false,obs:"Inflacao",min:"",minVal:0},
+  // Conservadores do Multimercado
+  {name:"Bradesco Selecao Ultra Conservador",taf:0.50,ret1m:1.16,cdi:96,ret12m:13.95,ret6m:6.81,vol:0.27,pl:"1.683,6",txMax:1.80,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"Multimercado conservador",min:"",minVal:0},
+  {name:"Bradesco Selecao Conservador",taf:0.70,ret1m:1.17,cdi:96,ret12m:13.95,ret6m:6.56,vol:0.82,pl:"403,9",txMax:2.50,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"Multimercado conservador",min:"",minVal:0},
+  {name:"Bradesco Anticiclico Conservador",taf:0.40,ret1m:0.91,cdi:null,ret12m:null,ret6m:6.38,vol:0.21,pl:"6,0",txMax:0.70,tipo:"Geral",pre:false,imab:false,status:"Aberto",capacity:false,obs:"Inicio Abr/2025",min:"",minVal:0},
+];
+
+// ============================
+// RENDER & FILTER LOGIC
+// ============================
+function fmt(v, dec=2) {
+  if (v === null || v === undefined) return '<span class="muted">-</span>';
+  return v.toFixed(dec).replace('.', ',') + '%';
+}
+
+function fmtCdi(v) {
+  if (v === null || v === undefined) return '<span class="muted">-</span>';
+  const cls = v >= 100 ? 'good' : v >= 90 ? '' : 'warn';
+  return `<span class="${cls}">${v.toFixed(0)}%</span>`;
+}
+
+function tipoTag(tipo) {
+  return tipo === 'Qualificado'
+    ? '<span class="tag tag-qualif">Qualificado</span>'
+    : '<span class="tag tag-geral">Geral</span>';
+}
+
+function obsTags(f) {
+  let t = '';
+  if (f.pre) t += '<span class="tag tag-pre">PRE</span> ';
+  if (f.imab) t += '<span class="tag tag-imab">IMAB</span> ';
+  if (f.capacity) t += '<span class="tag tag-capacity">CAPACITY</span> ';
+  if (f.status === 'Fechado') t += '<span class="tag tag-fechado">FECHADO</span> ';
+  if (f.ret12m === null) t += '<span class="tag tag-novo">NOVO</span> ';
+  if (f.obs && !f.pre && !f.imab) t += `<span class="muted">${f.obs}</span>`;
+  return t;
+}
+
+function shouldHide(f) {
+  const filters = getFilters();
+  if (filters.pre && f.pre) return true;
+  if (filters.imab && f.imab) return true;
+  if (filters.vol && f.vol !== null && f.vol > 0.50) return true;
+  if (filters.adm && f.taf >= 1.00) return true;
+  if (filters.qualif && f.tipo === 'Qualificado') return true;
+  if (filters.fechado && f.status === 'Fechado') return true;
+  if (filters.capacity && f.capacity) return true;
+  if (filters.min300 && f.minVal > 300) return true;
+  return false;
+}
+
+function getFilters() {
+  return {
+    pre: document.querySelector('#flt-pre input').checked,
+    imab: document.querySelector('#flt-imab input').checked,
+    vol: document.querySelector('#flt-vol input').checked,
+    adm: document.querySelector('#flt-adm input').checked,
+    qualif: document.querySelector('#flt-qualif input').checked,
+    fechado: document.querySelector('#flt-fechado input').checked,
+    capacity: document.querySelector('#flt-capacity input').checked,
+    min300: document.querySelector('#flt-min300 input').checked,
+  };
+}
+
+function renderTableBP() {
+  const tbody = document.getElementById('tbodyBP');
+  tbody.innerHTML = '';
+  let visible = 0;
+  fundsBP.forEach((f, i) => {
+    const hide = shouldHide(f);
+    if (!hide) visible++;
+    const retClass = f.ret12m !== null && f.ret12m >= 14 ? 'good' : '';
+    tbody.innerHTML += `<tr class="${hide ? 'hidden' : ''}" data-idx="${i}">
+      <td class="fund-name">${f.name}</td>
+      <td class="num ${f.taf >= 1.0 ? 'warn' : ''}">${fmt(f.taf)}</td>
+      <td class="num">${fmt(f.ret1m)}</td>
+      <td class="num">${fmtCdi(f.cdi)}</td>
+      <td class="num ${retClass}">${fmt(f.ret12m)}</td>
+      <td class="num">${fmt(f.ret24m)}</td>
+      <td class="num">${fmt(f.ret2025)}</td>
+      <td class="num">${fmt(f.ret2024)}</td>
+      <td class="num ${f.vol > 0.50 ? 'warn' : ''}">${fmt(f.vol)}</td>
+      <td>${f.min}</td>
+      <td>${tipoTag(f.tipo)}</td>
+      <td>${obsTags(f)}</td>
+    </tr>`;
+  });
+  document.getElementById('bpCount').textContent = `(${visible} de ${fundsBP.length} fundos)`;
+  document.getElementById('noResultsBP').style.display = visible === 0 ? 'block' : 'none';
+}
+
+function renderTableBD() {
+  const tbody = document.getElementById('tbodyBD');
+  tbody.innerHTML = '';
+  let visible = 0;
+  fundsBD.forEach((f, i) => {
+    const hide = shouldHide(f);
+    if (!hide) visible++;
+    const retClass = f.ret12m !== null && f.ret12m >= 14 ? 'good' : '';
+    tbody.innerHTML += `<tr class="${hide ? 'hidden' : ''}" data-idx="${i}">
+      <td class="fund-name">${f.name}</td>
+      <td class="num ${f.taf >= 1.0 ? 'warn' : ''}">${fmt(f.taf)}</td>
+      <td class="num">${fmt(f.ret1m)}</td>
+      <td class="num">${fmtCdi(f.cdi)}</td>
+      <td class="num ${retClass}">${fmt(f.ret12m)}</td>
+      <td class="num">${fmt(f.ret6m)}</td>
+      <td class="num ${f.vol !== null && f.vol > 0.50 ? 'warn' : ''}">${f.vol !== null ? fmt(f.vol) : '<span class="muted">-</span>'}</td>
+      <td class="num">${f.pl}</td>
+      <td class="num">${fmt(f.txMax)}</td>
+      <td>${tipoTag(f.tipo)}</td>
+      <td>${obsTags(f)}</td>
+    </tr>`;
+  });
+  document.getElementById('bdCount').textContent = `(${visible} de ${fundsBD.length} fundos)`;
+  document.getElementById('noResultsBD').style.display = visible === 0 ? 'block' : 'none';
+}
+
+function renderTop3() {
+  const visibleBP = fundsBP.filter(f => !shouldHide(f) && f.ret12m !== null)
+    .sort((a, b) => b.ret12m - a.ret12m).slice(0, 3);
+  const visibleBD = fundsBD.filter(f => !shouldHide(f) && f.ret12m !== null)
+    .sort((a, b) => b.ret12m - a.ret12m).slice(0, 3);
+
+  const container = document.getElementById('topCards');
+  container.innerHTML = '';
+
+  function cardHtml(title, color, funds, isBP) {
+    let html = `<div class="top-card"><h3><div class="icon ${color}" style="width:28px;height:28px;font-size:.7rem;border-radius:8px">${isBP ? 'BP' : 'BD'}</div>${title}</h3>`;
+    if (funds.length === 0) {
+      html += '<div class="muted" style="padding:12px;text-align:center;font-size:.75rem">Nenhum fundo atende aos filtros</div>';
+    }
+    funds.forEach((f, i) => {
+      const details = isBP
+        ? `TAF ${fmt(f.taf)} &bull; Vol ${fmt(f.vol)} &bull; %CDI ${f.cdi ? f.cdi.toFixed(0) + '%' : '-'} &bull; Min: ${f.min}`
+        : `Tx Adm ${fmt(f.taf)} &bull; Vol ${f.vol !== null ? fmt(f.vol) : '-'} &bull; %CDI ${f.cdi ? f.cdi + '%' : '-'} &bull; PL R$ ${f.pl} mi`;
+      html += `<div class="top-fund">
+        <div class="rank rank-${i+1}">${i+1}</div>
+        <div class="top-fund-info">
+          <div class="top-fund-name">${f.name}</div>
+          <div class="top-fund-details">${details}</div>
+        </div>
+        <div class="top-fund-ret">${fmt(f.ret12m)}</div>
+      </div>`;
+    });
+    html += '</div>';
+    return html;
+  }
+
+  container.innerHTML = cardHtml('BrasilPrev - Top 3', 'brasilprev-color', visibleBP, true)
+    + cardHtml('Bradesco - Top 3', 'bradesco-color', visibleBD, false);
+}
+
+function updateFilterStyles() {
+  document.querySelectorAll('.filter-item').forEach(el => {
+    const cb = el.querySelector('input[type="checkbox"]');
+    el.classList.toggle('active', cb.checked);
+  });
+  const filters = getFilters();
+  const active = Object.values(filters).filter(Boolean).length;
+  document.getElementById('filterCount').textContent = `(${active} ativo${active !== 1 ? 's' : ''})`;
+}
+
+function applyFilters() {
+  updateFilterStyles();
+  renderTableBP();
+  renderTableBD();
+  renderTop3();
+}
+
+// Sorting
+let sortState = {};
+document.querySelectorAll('.sort-btn').forEach(th => {
+  th.addEventListener('click', function() {
+    const col = this.dataset.col;
+    const table = this.dataset.table;
+    const key = table + '-' + col;
+    const dir = sortState[key] === 'asc' ? 'desc' : 'asc';
+    sortState = { [key]: dir };
+
+    // Reset all sort indicators
+    document.querySelectorAll('.sort-btn').forEach(b => { b.classList.remove('asc', 'desc'); });
+    this.classList.add(dir);
+
+    const arr = table === 'bp' ? fundsBP : fundsBD;
+    const colMap = {
+      taf: 'taf', ret1m: 'ret1m', cdi: 'cdi', ret12m: 'ret12m',
+      ret24m: 'ret24m', ret6m: 'ret6m', ret2025: 'ret2025', ret2024: 'ret2024', vol: 'vol'
+    };
+    const prop = colMap[col];
+    arr.sort((a, b) => {
+      const va = a[prop] ?? -Infinity;
+      const vb = b[prop] ?? -Infinity;
+      return dir === 'asc' ? va - vb : vb - va;
+    });
+    if (table === 'bp') renderTableBP(); else renderTableBD();
+    renderTop3();
+  });
+});
+
+// Initial render
+applyFilters();
+</script>
+
+</body>
+</html>
