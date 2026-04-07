@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparativo - Fundos Conservadores de Previdência</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,sans-serif;background:#f0f2f5;color:#1a1a2e;line-height:1.5;min-height:100vh}
+  .container{max-width:1380px;margin:0 auto;padding:24px}
+
+  /* Header */
+  .header{text-align:center;margin-bottom:28px;padding:30px 24px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);border-radius:16px;color:#fff;position:relative;overflow:hidden}
+  .header::before{content:'';position:absolute;top:-50%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 70%);border-radius:50%}
+  .header h1{font-size:1.5rem;font-weight:700;letter-spacing:-.3px;position:relative}
+  .header p{font-size:.82rem;opacity:.7;font-weight:300;margin-top:4px;position:relative}
+  .header .badges{margin-top:14px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;position:relative}
+  .header .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:5px 14px;border-radius:20px;font-size:.7rem;font-weight:500;letter-spacing:.3px}
+  .badge-valor{background:rgba(34,197,94,.25)!important;border-color:rgba(34,197,94,.4)!important}
+
+  /* Filters Panel */
+  .filters-panel{background:#fff;border-radius:12px;padding:18px 22px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04)}
+  .filters-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .filters-header h3{font-size:.88rem;font-weight:700;color:#334155;display:flex;align-items:center;gap:6px}
+  .filters-header h3 span{font-size:1rem}
+  .btn-reset{background:#f1f5f9;border:1px solid #e2e8f0;padding:5px 14px;border-radius:6px;font-size:.72rem;font-weight:600;color:#64748b;cursor:pointer;transition:all .2s}
+  .btn-reset:hover{background:#e2e8f0;color:#334155}
+  .filters-grid{display:flex;flex-wrap:wrap;gap:10px}
+  .filter-chip{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1.5px solid #e2e8f0;background:#f8fafc;cursor:pointer;transition:all .15s;font-size:.75rem;font-weight:500;color:#475569;user-select:none}
+  .filter-chip:hover{border-color:#94a3b8;background:#f1f5f9}
+  .filter-chip.active{border-color:#3b82f6;background:#eff6ff;color:#1d4ed8}
+  .filter-chip input{display:none}
+  .filter-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid #94a3b8;transition:all .15s}
+  .filter-chip.active .filter-dot{background:#3b82f6;border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.2)}
+  .filter-count{margin-left:auto;background:#e2e8f0;color:#64748b;padding:1px 7px;border-radius:10px;font-size:.65rem;font-weight:700;transition:all .15s}
+  .filter-chip.active .filter-count{background:#3b82f6;color:#fff}
+
+  /* Section */
+  .section-title{display:flex;align-items:center;gap:12px;margin:28px 0 14px;padding-bottom:8px;border-bottom:2px solid #e2e8f0}
+  .section-title .icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;font-weight:700;flex-shrink:0}
+  .section-title h2{font-size:1.05rem;font-weight:600;color:#1a1a2e}
+  .section-title .subtitle{font-size:.72rem;color:#64748b;font-weight:400}
+  .brasilprev-color{background:linear-gradient(135deg,#0d47a1,#1565c0)}
+  .bradesco-color{background:linear-gradient(135deg,#b71c1c,#d32f2f)}
+  .top-color{background:linear-gradient(135deg,#b45309,#d97706)}
+
+  /* Tables */
+  .table-wrap{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);margin-bottom:24px;transition:opacity .2s}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.78rem;white-space:nowrap}
+  thead th{padding:10px 12px;text-align:center;font-weight:600;font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:#fff;position:sticky;top:0;z-index:2}
+  .bp-th{background:#1565c0}
+  .bd-th{background:#c62828}
+  .top-th{background:linear-gradient(135deg,#92400e,#b45309)}
+  thead th:first-child{text-align:left;min-width:210px}
+  tbody td{padding:9px 12px;text-align:center;border-bottom:1px solid #f1f5f9;font-variant-numeric:tabular-nums}
+  tbody td:first-child{text-align:left;font-weight:500;color:#1e293b;position:sticky;left:0;background:#fff;z-index:1}
+  tbody tr:hover td{background:#f8fafc}
+  tbody tr:hover td:first-child{background:#f1f5f9}
+  tbody tr.hidden-row{display:none}
+  .val-pos{color:#16a34a;font-weight:500}
+  .val-neg{color:#dc2626;font-weight:500}
+  .val-hl{background:#eff6ff!important;font-weight:600;color:#1e40af}
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.65rem;font-weight:600;letter-spacing:.3px}
+  .tag-geral{background:#e0f2fe;color:#0369a1}
+  .tag-qualif{background:#fef3c7;color:#92400e}
+  .pl-v{font-size:.72rem;color:#64748b}
+  .rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:.65rem;font-weight:800;margin-right:6px;color:#fff}
+  .rank-1{background:linear-gradient(135deg,#f59e0b,#d97706)}
+  .rank-2{background:linear-gradient(135deg,#94a3b8,#64748b)}
+  .rank-3{background:linear-gradient(135deg,#b45309,#92400e)}
+  .casa-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.62rem;font-weight:700;letter-spacing:.5px}
+  .casa-bp{background:#dbeafe;color:#1e40af}
+  .casa-bd{background:#fee2e2;color:#991b1b}
+
+  .empty-state{padding:28px;text-align:center;color:#94a3b8;font-size:.85rem}
+  .empty-state span{font-size:1.5rem;display:block;margin-bottom:6px}
+
+  .indicators{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:4px}
+  .ind-card{background:#f8fafc;border-radius:8px;padding:12px;text-align:center}
+  .ind-label{font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+  .ind-val{font-size:1.1rem;font-weight:700}
+
+  .footer{text-align:center;padding:20px;font-size:.7rem;color:#94a3b8;line-height:1.6}
+  .footer strong{color:#64748b}
+
+  @media(max-width:768px){.container{padding:12px}.header h1{font-size:1.2rem}table{font-size:.72rem}.filters-grid{gap:6px}.filter-chip{padding:5px 10px;font-size:.7rem}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Comparativo — Fundos Conservadores de Previdência</h1>
+    <p>BrasilPrev vs Bradesco Vida e Previdência · Renda Fixa</p>
+    <div class="badges">
+      <span class="badge">BrasilPrev · Jan/2026</span>
+      <span class="badge">Bradesco Prev · 09/02/2026</span>
+      <span class="badge">Perfil Conservador</span>
+      <span class="badge badge-valor">Aporte: R$ 300 mil / instituição</span>
+      <span class="badge badge-valor">Investidor Geral</span>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-panel">
+    <div class="filters-header">
+      <h3><span>&#9881;</span> Filtros interativos</h3>
+      <button class="btn-reset" onclick="resetFilters()">Limpar todos</button>
+    </div>
+    <div class="filters-grid">
+      <label class="filter-chip active" id="chip-taxa">
+        <input type="checkbox" checked onchange="applyFilters()">
+        <span class="filter-dot"></span>
+        Tx. Adm. &lt; 1,00%
+        <span class="filter-count" id="count-taxa">—</span>
+      </label>
+      <label class="filter-chip active" id="chip-vol">
+        <input type="checkbox" checked onchange="applyFilters()">
+        <span class="filter-dot"></span>
+        Vol. &le; 0,50%
+        <span class="filter-count" id="count-vol">—</span>
+      </label>
+      <label class="filter-chip active" id="chip-pre">
+        <input type="checkbox" checked onchange="applyFilters()">
+        <span class="filter-dot"></span>
+        Sem Pré-fixados
+        <span class="filter-count" id="count-pre">—</span>
+      </label>
+      <label class="filter-chip active" id="chip-imab">
+        <input type="checkbox" checked onchange="applyFilters()">
+        <span class="filter-dot"></span>
+        Sem IMA-B / Inflação
+        <span class="filter-count" id="count-imab">—</span>
+      </label>
+      <label class="filter-chip active" id="chip-qualif">
+        <input type="checkbox" checked onchange="applyFilters()">
+        <span class="filter-dot"></span>
+        Investidor Geral (não qualif.)
+        <span class="filter-count" id="count-qualif">—</span>
+      </label>
+      <label class="filter-chip active" id="chip-aporte">
+        <input type="checkbox" checked onchange="applyFilters()">
+        <span class="filter-dot"></span>
+        Aporte &le; R$ 300 mil
+        <span class="filter-count" id="count-aporte">—</span>
+      </label>
+      <label class="filter-chip active" id="chip-private">
+        <input type="checkbox" checked onchange="applyFilters()">
+        <span class="filter-dot"></span>
+        Sem Private Banking
+        <span class="filter-count" id="count-private">—</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- TOP RANKING -->
+  <div class="section-title">
+    <div class="icon top-color">&#9733;</div>
+    <div>
+      <h2>Ranking — Top 3 de Cada Casa</h2>
+      <span class="subtitle">Ordenado por rentabilidade 12M · Atualizado dinamicamente pelos filtros</span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th class="top-th" style="min-width:250px">Fundo</th>
+          <th class="top-th">Casa</th>
+          <th class="top-th">Tx. Adm.</th>
+          <th class="top-th">12 M (%)</th>
+          <th class="top-th">24 M (%)</th>
+          <th class="top-th">% CDI</th>
+          <th class="top-th">PL</th>
+          <th class="top-th">Tipo</th>
+        </tr></thead>
+        <tbody id="top-body"></tbody>
+      </table>
+    </div>
+    <div class="empty-state" id="top-empty" style="display:none"><span>&#128269;</span>Nenhum fundo atende a todos os filtros selecionados.</div>
+  </div>
+
+  <!-- BRASILPREV -->
+  <div class="section-title">
+    <div class="icon brasilprev-color">B</div>
+    <div>
+      <h2>BrasilPrev — Renda Fixa <span id="bp-count" style="font-size:.75rem;color:#64748b;font-weight:400"></span></h2>
+      <span class="subtitle">Modelo Diferenciado · Rebate de TAF</span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th class="bp-th">Fundo</th>
+          <th class="bp-th">TAF (a.a.)</th>
+          <th class="bp-th">Jan (%)</th>
+          <th class="bp-th">% CDI 2026</th>
+          <th class="bp-th">12 M (%)</th>
+          <th class="bp-th">24 M (%)</th>
+          <th class="bp-th">36 M (%)</th>
+          <th class="bp-th">60 M (%)</th>
+          <th class="bp-th">2025</th>
+          <th class="bp-th">2024</th>
+          <th class="bp-th">2023</th>
+          <th class="bp-th">PL (R$ mil)</th>
+          <th class="bp-th">Aporte Mín.</th>
+          <th class="bp-th">Tipo</th>
+        </tr></thead>
+        <tbody id="bp-body"></tbody>
+      </table>
+    </div>
+    <div class="empty-state" id="bp-empty" style="display:none"><span>&#128269;</span>Nenhum fundo BrasilPrev atende aos filtros.</div>
+  </div>
+
+  <!-- BRADESCO -->
+  <div class="section-title">
+    <div class="icon bradesco-color">B</div>
+    <div>
+      <h2>Bradesco Vida e Previdência — Renda Fixa <span id="bd-count" style="font-size:.75rem;color:#64748b;font-weight:400"></span></h2>
+      <span class="subtitle">Rentabilidade diária · Data Análise: 09/02/2026</span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th class="bd-th">Fundo</th>
+          <th class="bd-th">Tx. Adm.</th>
+          <th class="bd-th">Tx. Máx.</th>
+          <th class="bd-th">1 M (%)</th>
+          <th class="bd-th">6 M (%)</th>
+          <th class="bd-th">12 M (%)</th>
+          <th class="bd-th">% CDI 1M</th>
+          <th class="bd-th">% CDI 6M</th>
+          <th class="bd-th">% CDI 12M</th>
+          <th class="bd-th">Vol. 6M</th>
+          <th class="bd-th">PL (R$ mi)</th>
+          <th class="bd-th">Início</th>
+        </tr></thead>
+        <tbody id="bd-body"></tbody>
+      </table>
+    </div>
+    <div class="empty-state" id="bd-empty" style="display:none"><span>&#128269;</span>Nenhum fundo Bradesco atende aos filtros.</div>
+  </div>
+
+  <!-- Indicadores -->
+  <div class="table-wrap" style="padding:20px">
+    <h3 style="font-size:.85rem;font-weight:600;margin-bottom:12px;color:#334155">Indicadores de Referência</h3>
+    <div class="indicators">
+      <div class="ind-card"><div class="ind-label">CDI (Jan/26)</div><div class="ind-val" style="color:#1e40af">1,16%</div></div>
+      <div class="ind-card"><div class="ind-label">CDI 12M</div><div class="ind-val" style="color:#1e40af">14,59%</div></div>
+      <div class="ind-card"><div class="ind-label">Poupança 12M</div><div class="ind-val" style="color:#059669">8,27%</div></div>
+      <div class="ind-card"><div class="ind-label">IPCA 12M</div><div class="ind-val" style="color:#d97706">4,44%</div></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>Disclaimer:</strong> Rentabilidade passada não é garantia de rentabilidade futura. Produtos não garantidos pela Instituição Administradora, pelo FGC ou qualquer mecanismo de seguro.<br>
+    Dados: BrasilPrev (Jan/2026) · Bradesco Vida e Previdência (09/02/2026) · Elaboração própria.
+  </div>
+</div>
+
+<script>
+// ========== DATA ==========
+const brasilprev = [
+  {nome:"BrasilPrev Clássico",taf:1.00,jan:"1,10%",cdi:"94,25%",r12:"13,46%",r12n:13.46,r24:"24,86%",r36:"39,76%",r60:"62,60%",y25:"13,33%",y24:"9,96%",y23:"12,04%",pl:"38.417.650",aporte:"5 mil",aporteN:5000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Clássico V",taf:0.80,jan:"1,11%",cdi:"95,70%",r12:"13,68%",r12n:13.68,r24:"25,35%",r36:"40,59%",r60:"64,19%",y25:"13,56%",y24:"10,17%",y23:"12,26%",pl:"25.750.302",aporte:"1 milhão",aporteN:1000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Clássico VI",taf:0.70,jan:"1,12%",cdi:"96,40%",r12:"13,79%",r12n:13.79,r24:"25,60%",r36:"40,99%",r60:"65,00%",y25:"13,67%",y24:"10,28%",y23:"12,37%",pl:"8.352.468",aporte:"2 milhões",aporteN:2000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Clássico VII",taf:0.60,jan:"1,13%",cdi:"97,08%",r12:"13,90%",r12n:13.90,r24:"25,84%",r36:"41,40%",r60:"65,81%",y25:"13,78%",y24:"10,39%",y23:"12,48%",pl:"4.441.426",aporte:"5 milhões",aporteN:5000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev FIX C",taf:1.00,jan:"1,20%",cdi:"102,84%",r12:"13,42%",r12n:13.42,r24:"25,22%",r36:"38,51%",r60:"58,18%",y25:"13,17%",y24:"8,39%",y23:"12,55%",pl:"12.744.280",aporte:"5 mil",aporteN:5000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev FIX VII",taf:0.80,jan:"1,21%",cdi:"104,31%",r12:"13,65%",r12n:13.65,r24:"23,72%",r36:"39,55%",r60:"59,78%",y25:"13,40%",y24:"8,61%",y23:"12,77%",pl:"28.319.236",aporte:"1 milhão",aporteN:1000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Concept III",taf:1.00,jan:"1,11%",cdi:"95,44%",r12:"9,79%",r12n:9.79,r24:"16,79%",r36:"28,91%",r60:"46,77%",y25:"10,62%",y24:"5,09%",y23:"11,06%",pl:"873.698",aporte:"5 mil",aporteN:5000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Concept",taf:0.80,jan:"1,13%",cdi:"96,86%",r12:"10,01%",r12n:10.01,r24:"17,26%",r36:"29,68%",r60:"48,24%",y25:"10,84%",y24:"5,31%",y23:"11,32%",pl:"2.130.293",aporte:"1 milhão",aporteN:1000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Concept II",taf:0.70,jan:"1,13%",cdi:"97,49%",r12:"10,10%",r12n:10.10,r24:"17,46%",r36:"30,02%",r60:"48,89%",y25:"10,94%",y24:"5,40%",y23:"11,41%",pl:"158.332",aporte:"2 milhões",aporteN:2000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Premium V",taf:1.00,jan:"1,31%",cdi:"112,15%",r12:"13,72%",r12n:13.72,r24:"20,77%",r36:"37,18%",r60:"53,13%",y25:"13,47%",y24:"5,59%",y23:"13,84%",pl:"2.241.312",aporte:"5 mil",aporteN:5000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Premium IV",taf:0.80,jan:"1,32%",cdi:"113,64%",r12:"13,96%",r12n:13.96,r24:"21,26%",r36:"38,02%",r60:"54,69%",y25:"13,70%",y24:"5,81%",y23:"14,07%",pl:"3.527.519",aporte:"1 milhão",aporteN:1000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Premium VI",taf:0.70,jan:"1,33%",cdi:"114,35%",r12:"14,06%",r12n:14.06,r24:"21,49%",r36:"38,40%",r60:"55,43%",y25:"13,81%",y24:"5,90%",y23:"14,17%",pl:"638.401",aporte:"2 milhões",aporteN:2000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Premium VIII",taf:0.60,jan:"1,34%",cdi:"115,02%",r12:"14,17%",r12n:14.17,r24:"21,72%",r36:"38,80%",r60:"56,15%",y25:"13,92%",y24:"6,01%",y23:"14,28%",pl:"924.442",aporte:"5 milhões",aporteN:5000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Estratégia 2035 V",taf:1.00,jan:"0,24%",cdi:"20,21%",r12:"12,42%",r12n:12.42,r24:"6,44%",r36:"24,86%",r60:"20,16%",y25:"12,94%",y24:"-7,17%",y23:"17,42%",pl:"122.013",aporte:"5 mil",aporteN:5000,tipo:"Geral",isPre:true,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev RF Ativo CP II",taf:1.25,jan:"1,40%",cdi:"120,50%",r12:"13,53%",r12n:13.53,r24:"23,67%",r36:"39,31%",r60:"53,43%",y25:"12,97%",y24:"8,77%",y23:"13,01%",pl:"94.256",aporte:"5 mil",aporteN:5000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev RF Ativo CP I",taf:1.00,jan:"1,43%",cdi:"122,41%",r12:"13,83%",r12n:13.83,r24:"24,34%",r36:"40,44%",r60:"55,57%",y25:"13,29%",y24:"9,06%",y23:"13,31%",pl:"284.415",aporte:"1 milhão",aporteN:1000000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Créd. Privado Plus",taf:0.80,jan:"1,05%",cdi:"~90%",r12:"14,10%",r12n:14.10,r24:"26,47%",r36:"41,57%",r60:"—",y25:"13,97%",y24:"11,05%",y23:"10,60%",pl:"40.016.554",aporte:"5 mil",aporteN:5000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Créd. Priv. Plus IQ",taf:0.80,jan:"1,05%",cdi:"102,97%",r12:"14,13%",r12n:14.13,r24:"26,82%",r36:"40,91%",r60:"—",y25:"13,96%",y24:"11,32%",y23:"8,82%",pl:"4.988.228",aporte:"1 milhão",aporteN:1000000,tipo:"Qualif.",isPre:false,isImab:false,isQualif:true,isPrivate:false},
+  {nome:"BrasilPrev Renda Fixa Ativa",taf:1.00,jan:"1,24%",cdi:"106,19%",r12:"10,34%",r12n:10.34,r24:"28,62%",r36:"41,55%",r60:"—",y25:"8,69%",y24:"18,42%",y23:"9,72%",pl:"2.642.564",aporte:"5 mil",aporteN:5000,tipo:"Geral",isPre:false,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Renda Fixa Ativa IQ",taf:0.80,jan:"1,25%",cdi:"107,53%",r12:"10,54%",r12n:10.54,r24:"29,10%",r36:"42,34%",r60:"—",y25:"8,88%",y24:"18,64%",y23:"9,93%",pl:"377.157",aporte:"1 milhão",aporteN:1000000,tipo:"Qualif.",isPre:false,isImab:false,isQualif:true,isPrivate:false},
+  {nome:"BrasilPrev Pré Ativo",taf:1.00,jan:"1,97%",cdi:"169,40%",r12:"16,35%",r12n:16.35,r24:"18,92%",r36:"—",r60:"—",y25:"17,00%",y24:"0,10%",y23:"—",pl:"449.552",aporte:"5 mil",aporteN:5000,tipo:"Geral",isPre:true,isImab:false,isQualif:false,isPrivate:false},
+  {nome:"BrasilPrev Pré Ativo IQ",taf:0.80,jan:"1,99%",cdi:"170,78%",r12:"16,75%",r12n:16.75,r24:"19,43%",r36:"38,08%",r60:"—",y25:"17,33%",y24:"0,47%",y23:"15,78%",pl:"151.504",aporte:"5 mil",aporteN:5000,tipo:"Qualif.",isPre:true,isImab:false,isQualif:true,isPrivate:false},
+  {nome:"BrasilPrev Créd. Privado",taf:0.80,jan:"1,20%",cdi:"103,40%",r12:"14,22%",r12n:14.22,r24:"26,23%",r36:"42,01%",r60:"66,39%",y25:"14,04%",y24:"10,56%",y23:"11,65%",pl:"5.607.066",aporte:"1 milhão",aporteN:1000000,tipo:"Qualif.",isPre:false,isImab:false,isQualif:true,isPrivate:false},
+  {nome:"BrasilPrev Pré 2027 IQ",taf:0.80,jan:"1,29%",cdi:"111,02%",r12:"15,06%",r12n:15.06,r24:"16,47%",r36:"38,34%",r60:"—",y25:"16,72%",y24:"-0,85%",y23:"18,61%",pl:"110.010",aporte:"1 milhão",aporteN:1000000,tipo:"Qualif.",isPre:true,isImab:false,isQualif:true,isPrivate:false},
+  {nome:"BrasilPrev Pré 2033 IQ",taf:0.80,jan:"2,45%",cdi:"210,58%",r12:"19,39%",r12n:19.39,r24:"8,85%",r36:"37,21%",r60:"—",y25:"21,53%",y24:"-12,94%",y23:"24,92%",pl:"79.811",aporte:"1 milhão",aporteN:1000000,tipo:"Qualif.",isPre:true,isImab:false,isQualif:true,isPrivate:false}
+];
+
+const bradesco = [
+  {nome:"Bradesco RF-A",taxa:0.50,taxaMax:"0,50%",r1m:"1,13%",r6m:"6,95%",r12:"14,11%",r12n:14.11,cdi1:"97",cdi6:"97",cdi12:"97",vol:0.05,volS:"0,05%",pl:"22.090,7",inicio:"12/04/13",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco SobMedida V-B",taxa:1.00,taxaMax:"1,00%",r1m:"1,12%",r6m:"6,67%",r12:"13,40%",r12n:13.40,cdi1:"96",cdi6:"93",cdi12:"92",vol:0.29,volS:"0,29%",pl:"1.036,4",inicio:"07/03/19",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Cred Priv II",taxa:1.00,taxaMax:"1,00%",r1m:"1,09%",r6m:"6,70%",r12:"13,61%",r12n:13.61,cdi1:"94",cdi6:"93",cdi12:"93",vol:0.04,volS:"0,04%",pl:"4.088,5",inicio:"19/01/15",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Priv PB Cred Priv",taxa:0.80,taxaMax:"0,80%",r1m:"1,11%",r6m:"6,82%",r12:"13,86%",r12n:13.86,cdi1:"95",cdi6:"95",cdi12:"95",vol:0.04,volS:"0,04%",pl:"37.047,7",inicio:"11/06/15",isPre:false,isImab:false,isPrivate:true},
+  {nome:"Bradesco Priv Performance CP",taxa:0.50,taxaMax:"0,50%",r1m:"1,13%",r6m:"6,98%",r12:"14,20%",r12n:14.20,cdi1:"97",cdi6:"97",cdi12:"97",vol:0.04,volS:"0,04%",pl:"58.050,8",inicio:"18/02/20",isPre:false,isImab:false,isPrivate:true},
+  {nome:"Bradesco Premium CP",taxa:0.60,taxaMax:"0,60%",r1m:"1,15%",r6m:"6,95%",r12:"14,39%",r12n:14.39,cdi1:"99",cdi6:"97",cdi12:"99",vol:0.09,volS:"0,09%",pl:"72.693,0",inicio:"23/02/18",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Ultra CP",taxa:0.40,taxaMax:"0,70%",r1m:"1,17%",r6m:"6,95%",r12:"14,61%",r12n:14.61,cdi1:"100",cdi6:"97",cdi12:"100",vol:0.10,volS:"0,10%",pl:"26.869,5",inicio:"23/08/22",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Tivio HGD 30 CP",taxa:0.40,taxaMax:"0,70%",r1m:"1,18%",r6m:"7,08%",r12:"—",r12n:0,cdi1:"102",cdi6:"98",cdi12:"—",vol:0.16,volS:"0,16%",pl:"3.238,9",inicio:"09/05/25",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Az Quest Altro",taxa:0.40,taxaMax:"0,70%",r1m:"1,16%",r6m:"—",r12:"—",r12n:0,cdi1:"100",cdi6:"—",cdi12:"—",vol:0,volS:"—",pl:"82,8",inicio:"19/11/25",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco SulAmérica",taxa:0.24,taxaMax:"0,90%",r1m:"1,17%",r6m:"—",r12:"—",r12n:0,cdi1:"101",cdi6:"—",cdi12:"—",vol:0,volS:"—",pl:"150,2",inicio:"05/11/25",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco CP Inflação",taxa:0.40,taxaMax:"0,80%",r1m:"1,29%",r6m:"5,81%",r12:"12,10%",r12n:12.10,cdi1:"111",cdi6:"81",cdi12:"83",vol:1.67,volS:"1,67%",pl:"109,1",inicio:"24/05/23",isPre:false,isImab:true,isPrivate:false},
+  {nome:"Bradesco Multigestores II CP",taxa:0.45,taxaMax:"0,60%",r1m:"1,16%",r6m:"6,93%",r12:"14,32%",r12n:14.32,cdi1:"100",cdi6:"96",cdi12:"98",vol:0.16,volS:"0,16%",pl:"1.480,0",inicio:"27/06/24",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Multigestores CP",taxa:0.40,taxaMax:"0,90%",r1m:"1,19%",r6m:"7,01%",r12:"14,56%",r12n:14.56,cdi1:"102",cdi6:"97",cdi12:"100",vol:0.16,volS:"0,16%",pl:"8.786,6",inicio:"26/10/21",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Creta RF",taxa:0.60,taxaMax:"0,60%",r1m:"1,19%",r6m:"6,81%",r12:"13,70%",r12n:13.70,cdi1:"103",cdi6:"95",cdi12:"94",vol:0.54,volS:"0,54%",pl:"6.573,5",inicio:"15/04/11",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Ativo RF",taxa:0.80,taxaMax:"0,80%",r1m:"1,18%",r6m:"6,70%",r12:"13,46%",r12n:13.46,cdi1:"101",cdi6:"93",cdi12:"92",vol:0.54,volS:"0,54%",pl:"2.781,1",inicio:"30/09/09",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco PGBL RF F10",taxa:1.00,taxaMax:"1,00%",r1m:"1,16%",r6m:"6,60%",r12:"13,24%",r12n:13.24,cdi1:"100",cdi6:"92",cdi12:"91",vol:0.54,volS:"0,54%",pl:"4.288,1",inicio:"30/08/99",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco VGBL RF F10",taxa:1.00,taxaMax:"1,00%",r1m:"1,16%",r6m:"6,60%",r12:"13,25%",r12n:13.25,cdi1:"100",cdi6:"92",cdi12:"91",vol:0.54,volS:"0,54%",pl:"8.092,4",inicio:"06/09/04",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco RF Athenas",taxa:0.60,taxaMax:"0,60%",r1m:"1,22%",r6m:"6,87%",r12:"13,53%",r12n:13.53,cdi1:"105",cdi6:"96",cdi12:"93",vol:0.82,volS:"0,82%",pl:"8.476,5",inicio:"07/03/19",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Exitus RF",taxa:0.55,taxaMax:"0,70%",r1m:"1,26%",r6m:"7,27%",r12:"14,25%",r12n:14.25,cdi1:"108",cdi6:"101",cdi12:"98",vol:0.47,volS:"0,47%",pl:"419,8",inicio:"10/05/23",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Grand Exitus",taxa:0.50,taxaMax:"0,80%",r1m:"1,51%",r6m:"7,12%",r12:"13,74%",r12n:13.74,cdi1:"130",cdi6:"99",cdi12:"94",vol:1.11,volS:"1,11%",pl:"38,4",inicio:"26/09/23",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Volt RF",taxa:0.65,taxaMax:"0,80%",r1m:"1,09%",r6m:"6,04%",r12:"11,16%",r12n:11.16,cdi1:"93",cdi6:"84",cdi12:"77",vol:1.07,volS:"1,07%",pl:"29,8",inicio:"26/07/23",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Sel. Ultra Conservador",taxa:0.50,taxaMax:"1,80%",r1m:"1,16%",r6m:"6,81%",r12:"13,95%",r12n:13.95,cdi1:"100",cdi6:"95",cdi12:"96",vol:0.27,volS:"0,27%",pl:"1.683,6",inicio:"04/10/22",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco Sel. Conservador",taxa:0.70,taxaMax:"2,50%",r1m:"1,17%",r6m:"6,56%",r12:"13,95%",r12n:13.95,cdi1:"101",cdi6:"91",cdi12:"96",vol:0.82,volS:"0,82%",pl:"403,9",inicio:"29/07/20",isPre:false,isImab:false,isPrivate:false},
+  {nome:"Bradesco IRF-M",taxa:0.60,taxaMax:"0,60%",r1m:"1,62%",r6m:"7,18%",r12:"16,63%",r12n:16.63,cdi1:"—",cdi6:"—",cdi12:"—",vol:2.53,volS:"2,53%",pl:"320,1",inicio:"16/05/19",isPre:true,isImab:false,isPrivate:false},
+  {nome:"Bradesco Pré 5 anos",taxa:0.80,taxaMax:"0,80%",r1m:"1,78%",r6m:"6,85%",r12:"20,27%",r12n:20.27,cdi1:"—",cdi6:"—",cdi12:"—",vol:6.28,volS:"6,28%",pl:"131,2",inicio:"06/02/20",isPre:true,isImab:false,isPrivate:false},
+  {nome:"Bradesco IMA-B 5",taxa:0.60,taxaMax:"0,60%",r1m:"1,21%",r6m:"5,24%",r12:"10,34%",r12n:10.34,cdi1:"—",cdi6:"—",cdi12:"—",vol:1.61,volS:"1,61%",pl:"528,8",inicio:"07/04/17",isPre:false,isImab:true,isPrivate:false},
+  {nome:"Bradesco IMA-B",taxa:1.00,taxaMax:"1,00%",r1m:"0,96%",r6m:"3,84%",r12:"11,39%",r12n:11.39,cdi1:"—",cdi6:"—",cdi12:"—",vol:3.92,volS:"3,92%",pl:"288,9",inicio:"11/10/12",isPre:false,isImab:true,isPrivate:false},
+  {nome:"Bradesco Juro Real 2050",taxa:0.60,taxaMax:"0,60%",r1m:"0,95%",r6m:"3,06%",r12:"14,84%",r12n:14.84,cdi1:"—",cdi6:"—",cdi12:"—",vol:7.07,volS:"7,07%",pl:"38,1",inicio:"20/04/21",isPre:false,isImab:true,isPrivate:false}
+];
+
+// ========== FILTER LOGIC ==========
+function getFilters() {
+  const chips = document.querySelectorAll('.filter-chip input');
+  return {
+    taxa: chips[0].checked,
+    vol: chips[1].checked,
+    pre: chips[2].checked,
+    imab: chips[3].checked,
+    qualif: chips[4].checked,
+    aporte: chips[5].checked,
+    private: chips[6].checked
+  };
+}
+
+function passBP(f, filters) {
+  if (filters.taxa && f.taf >= 1.00) return false;
+  if (filters.pre && f.isPre) return false;
+  if (filters.imab && f.isImab) return false;
+  if (filters.qualif && f.isQualif) return false;
+  if (filters.aporte && f.aporteN > 300000) return false;
+  return true;
+}
+
+function passBD(f, filters) {
+  if (filters.taxa && f.taxa >= 1.00) return false;
+  if (filters.vol && f.vol > 0.50) return false;
+  if (filters.pre && f.isPre) return false;
+  if (filters.imab && f.isImab) return false;
+  if (filters.private && f.isPrivate) return false;
+  return true;
+}
+
+function renderBP(list) {
+  const tbody = document.getElementById('bp-body');
+  const empty = document.getElementById('bp-empty');
+  tbody.innerHTML = '';
+  if (list.length === 0) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  list.forEach(f => {
+    const tipoClass = f.tipo === 'Qualif.' ? 'tag-qualif' : 'tag-geral';
+    tbody.innerHTML += `<tr>
+      <td>${f.nome}</td>
+      <td>${f.taf.toFixed(2).replace('.',',')}%</td>
+      <td>${f.jan}</td>
+      <td>${f.cdi}</td>
+      <td class="val-pos">${f.r12}</td>
+      <td>${f.r24}</td>
+      <td>${f.r36}</td>
+      <td>${f.r60}</td>
+      <td>${f.y25}</td>
+      <td>${f.y24}</td>
+      <td>${f.y23}</td>
+      <td class="pl-v">${f.pl}</td>
+      <td>${f.aporte}</td>
+      <td><span class="tag ${tipoClass}">${f.tipo}</span></td>
+    </tr>`;
+  });
+  document.getElementById('bp-count').textContent = `(${list.length} fundo${list.length>1?'s':''})`;
+}
+
+function renderBD(list) {
+  const tbody = document.getElementById('bd-body');
+  const empty = document.getElementById('bd-empty');
+  tbody.innerHTML = '';
+  if (list.length === 0) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  list.forEach(f => {
+    const hl = v => parseInt(v) >= 97 ? 'val-hl' : '';
+    tbody.innerHTML += `<tr>
+      <td>${f.nome}</td>
+      <td>${f.taxa.toFixed(2).replace('.',',')}%</td>
+      <td>${f.taxaMax}</td>
+      <td class="val-pos">${f.r1m}</td>
+      <td>${f.r6m}</td>
+      <td>${f.r12n > 0 ? f.r12 : '—'}</td>
+      <td class="${hl(f.cdi1)}">${f.cdi1}</td>
+      <td class="${hl(f.cdi6)}">${f.cdi6}</td>
+      <td class="${hl(f.cdi12)}">${f.cdi12}</td>
+      <td>${f.volS}</td>
+      <td class="pl-v">${f.pl}</td>
+      <td>${f.inicio}</td>
+    </tr>`;
+  });
+  document.getElementById('bd-count').textContent = `(${list.length} fundo${list.length>1?'s':''})`;
+}
+
+function renderTop(bpList, bdList) {
+  const tbody = document.getElementById('top-body');
+  const empty = document.getElementById('top-empty');
+  tbody.innerHTML = '';
+
+  const bpTop = bpList.filter(f => f.r12n > 0).sort((a,b) => b.r12n - a.r12n).slice(0,3);
+  const bdTop = bdList.filter(f => f.r12n > 0).sort((a,b) => b.r12n - a.r12n).slice(0,3);
+
+  if (bpTop.length === 0 && bdTop.length === 0) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+
+  const ranks = ['rank-1','rank-2','rank-3'];
+
+  bdTop.forEach((f, i) => {
+    tbody.innerHTML += `<tr>
+      <td><span class="rank ${ranks[i]||''}">${i+1}</span>${f.nome}</td>
+      <td><span class="casa-tag casa-bd">BRADESCO</span></td>
+      <td>${f.taxa.toFixed(2).replace('.',',')}%</td>
+      <td class="val-hl">${f.r12}</td>
+      <td>—</td>
+      <td class="val-hl">${f.cdi12}</td>
+      <td class="pl-v">R$ ${f.pl} mi</td>
+      <td><span class="tag tag-geral">Geral</span></td>
+    </tr>`;
+  });
+
+  if (bpTop.length > 0 && bdTop.length > 0) {
+    tbody.innerHTML += `<tr style="height:4px;background:#e2e8f0"><td colspan="8" style="padding:0;border:none"></td></tr>`;
+  }
+
+  bpTop.forEach((f, i) => {
+    const tipoClass = f.tipo === 'Qualif.' ? 'tag-qualif' : 'tag-geral';
+    tbody.innerHTML += `<tr>
+      <td><span class="rank ${ranks[i]||''}">${i+1}</span>${f.nome}</td>
+      <td><span class="casa-tag casa-bp">BRASILPREV</span></td>
+      <td>${f.taf.toFixed(2).replace('.',',')}%</td>
+      <td class="val-hl">${f.r12}</td>
+      <td>${f.r24}</td>
+      <td class="val-hl">${f.cdi}</td>
+      <td class="pl-v">R$ ${f.pl}</td>
+      <td><span class="tag ${tipoClass}">${f.tipo}</span></td>
+    </tr>`;
+  });
+}
+
+function updateChips(filters) {
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.querySelector('input').checked);
+  });
+
+  // Count exclusions
+  const countExcl = (arr, test) => arr.filter(f => !test(f, filters)).length;
+  // For simplicity, show how many are removed by each
+  document.getElementById('count-taxa').textContent = (brasilprev.filter(f=>f.taf>=1).length + bradesco.filter(f=>f.taxa>=1).length) + ' excl.';
+  document.getElementById('count-vol').textContent = bradesco.filter(f=>f.vol>0.5).length + ' excl.';
+  document.getElementById('count-pre').textContent = (brasilprev.filter(f=>f.isPre).length + bradesco.filter(f=>f.isPre).length) + ' excl.';
+  document.getElementById('count-imab').textContent = (brasilprev.filter(f=>f.isImab).length + bradesco.filter(f=>f.isImab).length) + ' excl.';
+  document.getElementById('count-qualif').textContent = brasilprev.filter(f=>f.isQualif).length + ' excl.';
+  document.getElementById('count-aporte').textContent = brasilprev.filter(f=>f.aporteN>300000).length + ' excl.';
+  document.getElementById('count-private').textContent = bradesco.filter(f=>f.isPrivate).length + ' excl.';
+}
+
+function applyFilters() {
+  const filters = getFilters();
+  updateChips(filters);
+
+  const bpFiltered = brasilprev.filter(f => passBP(f, filters));
+  const bdFiltered = bradesco.filter(f => passBD(f, filters));
+
+  renderBP(bpFiltered);
+  renderBD(bdFiltered);
+  renderTop(bpFiltered, bdFiltered);
+}
+
+function resetFilters() {
+  document.querySelectorAll('.filter-chip input').forEach(cb => cb.checked = false);
+  applyFilters();
+}
+
+// Init
+applyFilters();
+</script>
+</body>
+</html>
