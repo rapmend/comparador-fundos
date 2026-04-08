@@ -42,7 +42,7 @@
   .section-title h2{font-size:1.05rem;font-weight:600;color:#1a1a2e}
   .section-title .subtitle{font-size:.72rem;color:#64748b;font-weight:400}
   .brasilprev-color{background:linear-gradient(135deg,#0d47a1,#1565c0)}
-  .bradesco-color{background:linear-gradient(135deg,#b71c1c,#d32f2f)}
+  .bradesco-color{background:linear-gradient(135deg,#065f46,#059669)}
   .top-color{background:linear-gradient(135deg,#b45309,#d97706)}
 
   /* Tables */
@@ -51,7 +51,7 @@
   table{width:100%;border-collapse:collapse;font-size:.78rem;white-space:nowrap}
   thead th{padding:10px 12px;text-align:center;font-weight:600;font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:#fff;position:sticky;top:0;z-index:2}
   .bp-th{background:#1565c0}
-  .bd-th{background:#c62828}
+  .bd-th{background:#065f46}
   .top-th{background:linear-gradient(135deg,#92400e,#b45309)}
   thead th:first-child{text-align:left;min-width:210px}
   tbody td{padding:9px 12px;text-align:center;border-bottom:1px solid #f1f5f9;font-variant-numeric:tabular-nums}
@@ -72,7 +72,7 @@
   .rank-3{background:linear-gradient(135deg,#b45309,#92400e)}
   .casa-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.62rem;font-weight:700;letter-spacing:.5px}
   .casa-bp{background:#dbeafe;color:#1e40af}
-  .casa-bd{background:#fee2e2;color:#991b1b}
+  .casa-bd{background:#d1fae5;color:#065f46}
 
   .empty-state{padding:28px;text-align:center;color:#94a3b8;font-size:.85rem}
   .empty-state span{font-size:1.5rem;display:block;margin-bottom:6px}
@@ -93,13 +93,15 @@
 
   <div class="header">
     <h1>Comparativo — Fundos Conservadores de Previdência</h1>
-    <p>BrasilPrev vs Bradesco Vida e Previdência · Renda Fixa</p>
+    <p>BrasilPrev vs Ágora (Bradesco) · Previdência Privada · Renda Fixa Conservadora</p>
     <div class="badges">
       <span class="badge">BrasilPrev · Jan/2026</span>
-      <span class="badge">Bradesco Prev · 09/02/2026</span>
-      <span class="badge">Perfil Conservador</span>
+      <span class="badge">Ágora/Bradesco · 09/02/2026</span>
+      <span class="badge">CDI 12M: 14,59%</span>
+      <span class="badge">Selic Meta: 13,25% a.a.</span>
+      <span class="badge">IPCA 12M: 4,44%</span>
       <span class="badge badge-valor">Aporte: R$ 300 mil / instituição</span>
-      <span class="badge badge-valor">Investidor Geral</span>
+      <span class="badge badge-valor">Investidor Geral (não qualif.)</span>
     </div>
   </div>
 
@@ -110,12 +112,6 @@
       <button class="btn-reset" onclick="resetFilters()">Limpar todos</button>
     </div>
     <div class="filters-grid">
-      <label class="filter-chip active" id="chip-taxa">
-        <input type="checkbox" checked onchange="applyFilters()">
-        <span class="filter-dot"></span>
-        Tx. Adm. &lt; 1,00%
-        <span class="filter-count" id="count-taxa">—</span>
-      </label>
       <label class="filter-chip active" id="chip-vol">
         <input type="checkbox" checked onchange="applyFilters()">
         <span class="filter-dot"></span>
@@ -145,12 +141,6 @@
         <span class="filter-dot"></span>
         Aporte &le; R$ 300 mil
         <span class="filter-count" id="count-aporte">—</span>
-      </label>
-      <label class="filter-chip active" id="chip-private">
-        <input type="checkbox" checked onchange="applyFilters()">
-        <span class="filter-dot"></span>
-        Sem Private Banking
-        <span class="filter-count" id="count-private">—</span>
       </label>
     </div>
   </div>
@@ -219,7 +209,7 @@
   <div class="section-title">
     <div class="icon bradesco-color">B</div>
     <div>
-      <h2>Bradesco Vida e Previdência — Renda Fixa <span id="bd-count" style="font-size:.75rem;color:#64748b;font-weight:400"></span></h2>
+      <h2>Ágora (Bradesco) — Renda Fixa <span id="bd-count" style="font-size:.75rem;color:#64748b;font-weight:400"></span></h2>
       <span class="subtitle">Rentabilidade diária · Data Análise: 09/02/2026</span>
     </div>
   </div>
@@ -243,7 +233,7 @@
         <tbody id="bd-body"></tbody>
       </table>
     </div>
-    <div class="empty-state" id="bd-empty" style="display:none"><span>&#128269;</span>Nenhum fundo Bradesco atende aos filtros.</div>
+    <div class="empty-state" id="bd-empty" style="display:none"><span>&#128269;</span>Nenhum fundo Ágora atende aos filtros.</div>
   </div>
 
   <!-- Indicadores -->
@@ -259,7 +249,7 @@
 
   <div class="footer">
     <strong>Disclaimer:</strong> Rentabilidade passada não é garantia de rentabilidade futura. Produtos não garantidos pela Instituição Administradora, pelo FGC ou qualquer mecanismo de seguro.<br>
-    Dados: BrasilPrev (Jan/2026) · Bradesco Vida e Previdência (09/02/2026) · Elaboração própria.
+    Dados: BrasilPrev (Jan/2026) · Ágora/Bradesco Vida e Previdência (09/02/2026) · Elaboração própria.
   </div>
 </div>
 
@@ -328,18 +318,15 @@ const bradesco = [
 function getFilters() {
   const chips = document.querySelectorAll('.filter-chip input');
   return {
-    taxa: chips[0].checked,
-    vol: chips[1].checked,
-    pre: chips[2].checked,
-    imab: chips[3].checked,
-    qualif: chips[4].checked,
-    aporte: chips[5].checked,
-    private: chips[6].checked
+    vol: chips[0].checked,
+    pre: chips[1].checked,
+    imab: chips[2].checked,
+    qualif: chips[3].checked,
+    aporte: chips[4].checked
   };
 }
 
 function passBP(f, filters) {
-  if (filters.taxa && f.taf >= 1.00) return false;
   if (filters.pre && f.isPre) return false;
   if (filters.imab && f.isImab) return false;
   if (filters.qualif && f.isQualif) return false;
@@ -348,11 +335,9 @@ function passBP(f, filters) {
 }
 
 function passBD(f, filters) {
-  if (filters.taxa && f.taxa >= 1.00) return false;
   if (filters.vol && f.vol > 0.50) return false;
   if (filters.pre && f.isPre) return false;
   if (filters.imab && f.isImab) return false;
-  if (filters.private && f.isPrivate) return false;
   return true;
 }
 
@@ -426,7 +411,7 @@ function renderTop(bpList, bdList) {
   bdTop.forEach((f, i) => {
     tbody.innerHTML += `<tr>
       <td><span class="rank ${ranks[i]||''}">${i+1}</span>${f.nome}</td>
-      <td><span class="casa-tag casa-bd">BRADESCO</span></td>
+      <td><span class="casa-tag casa-bd">ÁGORA</span></td>
       <td>${f.taxa.toFixed(2).replace('.',',')}%</td>
       <td class="val-hl">${f.r12}</td>
       <td>—</td>
@@ -463,13 +448,11 @@ function updateChips(filters) {
   // Count exclusions
   const countExcl = (arr, test) => arr.filter(f => !test(f, filters)).length;
   // For simplicity, show how many are removed by each
-  document.getElementById('count-taxa').textContent = (brasilprev.filter(f=>f.taf>=1).length + bradesco.filter(f=>f.taxa>=1).length) + ' excl.';
   document.getElementById('count-vol').textContent = bradesco.filter(f=>f.vol>0.5).length + ' excl.';
   document.getElementById('count-pre').textContent = (brasilprev.filter(f=>f.isPre).length + bradesco.filter(f=>f.isPre).length) + ' excl.';
   document.getElementById('count-imab').textContent = (brasilprev.filter(f=>f.isImab).length + bradesco.filter(f=>f.isImab).length) + ' excl.';
   document.getElementById('count-qualif').textContent = brasilprev.filter(f=>f.isQualif).length + ' excl.';
   document.getElementById('count-aporte').textContent = brasilprev.filter(f=>f.aporteN>300000).length + ' excl.';
-  document.getElementById('count-private').textContent = bradesco.filter(f=>f.isPrivate).length + ' excl.';
 }
 
 function applyFilters() {
